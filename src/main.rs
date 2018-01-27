@@ -45,7 +45,7 @@ fn do_elf(file: &[u8], elf: &goblin::elf::Elf) {
                 .into_iter()
                 .map(|mut gadget| {
                     let offset = gadget.offset();
-                    gadget.set_offset(vaddr as usize + offset);
+                    gadget.set_offset(vaddr + offset);
                     gadget
                 })
                 .collect());

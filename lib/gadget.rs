@@ -3,7 +3,7 @@
 pub struct Gadget {
     bytes: Vec<u8>,
     instructions: Vec<String>,
-    offset: usize,
+    offset: u64,
 }
 
 
@@ -17,7 +17,7 @@ impl Gadget {
     ///                    instructions in this ROP gadget.
     /// * `bytes` - The bytes of the instructions in this gadget.
     pub fn new(
-        offset: usize,
+        offset: u64,
         instructions: Vec<String>,
         bytes: Vec<u8>
     ) -> Gadget {
@@ -45,7 +45,7 @@ impl Gadget {
     }
 
     /// Get the offset into the searched buffer where this gadget was found.
-    pub fn offset(&self) -> usize {
+    pub fn offset(&self) -> u64 {
         self.offset
     }
 
@@ -60,7 +60,7 @@ impl Gadget {
     }
 
     /// Set offset for this gadget
-    pub fn set_offset(&mut self, offset: usize) {
+    pub fn set_offset(&mut self, offset: u64) {
         self.offset = offset;
     }
 }

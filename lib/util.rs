@@ -43,7 +43,7 @@ pub(crate) fn find(
                 instrs.push(format!("{} {}", instruction.mnemonic, instruction.op_str));
 
                 if ret_instructions.contains(&instruction.id) {
-                    let offset = i;
+                    let offset = i as u64;
                     let bytes =
                         disassembly_bytes.get(0..length)
                                          .ok_or("Failed to get bytes")?
