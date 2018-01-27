@@ -1,0 +1,19 @@
+[package]
+name = "owl"
+version = "0.0.1"
+authors = [ "Alex Eubanks <endeavor@rainbowsandpwnies.com>" ]
+description = "ROP-gadget finder in Rust"
+
+[dependencies]
+clap = "2.29.2"
+error-chain = "0.11"
+falcon_capstone = "0.2.1"
+goblin = "0.0.14"
+
+[lib]
+name = "owl"
+path = "lib/lib.rs"
+
+[[bin]]
+name = "owl-bin"
+path = "src/main.rs"
