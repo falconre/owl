@@ -2,7 +2,10 @@
 name = "owl"
 version = "0.0.1"
 authors = [ "Alex Eubanks <endeavor@rainbowsandpwnies.com>" ]
+repository = "https://github.com/falconre/owl"
 description = "ROP-gadget finder in Rust"
+license = "Apache-2.0"
+readme = "README.md"
 
 [dependencies]
 clap = "2.29.2"

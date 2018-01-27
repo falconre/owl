@@ -1,6 +1,6 @@
-//! Owl is a Rust library for finding ROP gadgets in binary code.
-//!
-//! https://en.wikipedia.org/wiki/Return-oriented_programming
+//! Owl is a Rust library for finding
+//! [ROP](https://en.wikipedia.org/wiki/Return-oriented_programming) gadgets in
+//! binary code.
 //!
 //! ```
 //! use owl::error::*;

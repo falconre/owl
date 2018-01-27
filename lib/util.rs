@@ -34,9 +34,9 @@ pub(crate) fn find(
                 Err(_) => continue
             };
 
-            let mut length: usize = 0;
-
             let mut instrs: Vec<String> = Vec::new();
+
+            let mut length: usize = 0;
 
             for instruction in instructions.iter() {
                 length += instruction.size as usize;
@@ -44,9 +44,11 @@ pub(crate) fn find(
 
                 if ret_instructions.contains(&instruction.id) {
                     let offset = i;
-                    let length = length;
-                    let bytes = disassembly_bytes.to_vec();
-                    gadgets.push(Gadget::new(offset, length, instrs, bytes));
+                    let bytes =
+                        disassembly_bytes.get(0..length)
+                                         .ok_or("Failed to get bytes")?
+                                         .to_vec();
+                    gadgets.push(Gadget::new(offset, instrs, bytes));
                     break 'depth;
                 }
                 else if !valid_instructions.contains(&instruction.id) {

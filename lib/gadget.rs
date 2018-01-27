@@ -3,7 +3,6 @@
 pub struct Gadget {
     bytes: Vec<u8>,
     instructions: Vec<String>,
-    length: usize,
     offset: usize,
 }
 
@@ -19,7 +18,6 @@ impl Gadget {
     /// * `bytes` - The bytes of the instructions in this gadget.
     pub fn new(
         offset: usize,
-        length: usize,
         instructions: Vec<String>,
         bytes: Vec<u8>
     ) -> Gadget {
@@ -27,7 +25,6 @@ impl Gadget {
         Gadget {
             bytes: bytes,
             instructions: instructions,
-            length: length,
             offset: offset,
         }
     }
@@ -43,12 +40,27 @@ impl Gadget {
     }
 
     /// Get the length of this gadget in bytes.
-    pub fn length(&self) -> usize {
-        self.length
+    pub fn len(&self) -> usize {
+        self.bytes.len()
     }
 
     /// Get the offset into the searched buffer where this gadget was found.
     pub fn offset(&self) -> usize {
         self.offset
+    }
+
+    /// Set the bytes for this gadget.
+    pub fn set_bytes(&mut self, bytes: Vec<u8>) {
+        self.bytes = bytes;
+    }
+
+    /// Set the instruction strings for this gadget.
+    pub fn set_instructions(&mut self, instructions: Vec<String>) {
+        self.instructions = instructions;
+    }
+
+    /// Set offset for this gadget
+    pub fn set_offset(&mut self, offset: usize) {
+        self.offset = offset;
     }
 }
