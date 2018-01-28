@@ -27,7 +27,8 @@ impl Mips {
              capstone::cs_arch::CS_ARCH_MIPS,
              capstone::CS_MODE_32 | capstone::CS_MODE_BIG_ENDIAN,
              RET_INSTRUCTIONS,
-             VALID_INSTRUCTIONS)
+             VALID_INSTRUCTIONS,
+             4)
     }
 }
 
@@ -54,7 +55,8 @@ impl Mipsel {
              capstone::cs_arch::CS_ARCH_MIPS,
              capstone::CS_MODE_32 | capstone::CS_MODE_LITTLE_ENDIAN,
              RET_INSTRUCTIONS,
-             VALID_INSTRUCTIONS)
+             VALID_INSTRUCTIONS,
+             4)
     }
 }
 

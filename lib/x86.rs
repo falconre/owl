@@ -24,7 +24,8 @@ impl X86 {
              capstone::cs_arch::CS_ARCH_X86,
              capstone::CS_MODE_32,
              RET_INSTRUCTIONS,
-             VALID_INSTRUCTIONS)
+             VALID_INSTRUCTIONS,
+             0)
     }
 }
 

@@ -11,7 +11,8 @@ pub(crate) fn find(
     arch: capstone::cs_arch,
     mode: capstone::cs_mode,
     ret_instructions: &[capstone::InstrIdArch],
-    valid_instructions: &[capstone::InstrIdArch]
+    valid_instructions: &[capstone::InstrIdArch],
+    delay_slot: usize
 ) -> Result<Vec<Gadget>> {
     let mut gadgets = Vec::new();
 
@@ -45,7 +46,7 @@ pub(crate) fn find(
                 if ret_instructions.contains(&instruction.id) {
                     let offset = i as u64;
                     let bytes =
-                        disassembly_bytes.get(0..length)
+                        disassembly_bytes.get(0..(length + delay_slot))
                                          .ok_or("Failed to get bytes")?
                                          .to_vec();
                     gadgets.push(Gadget::new(offset, instrs, bytes));
