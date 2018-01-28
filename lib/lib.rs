@@ -21,6 +21,7 @@
 
 #[macro_use] extern crate error_chain;
 extern crate falcon_capstone;
+extern crate rayon;
 
 mod gadget;
 mod mips;
