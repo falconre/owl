@@ -73,8 +73,7 @@ fn do_elf(file: &[u8], elf: &goblin::elf::Elf) {
 fn main () {
     // Use clap for command-line argument parsing.
     let matches = App::new("owl")
-        .version("0.0.1")
-        .author("Alex Eubanks <alex.eubanks@forallsecure.com")
+        .author("Alex Eubanks <endeavor@rainbowsandpwnies.com>")
         .about("ROP Gadget Finder")
         .arg(Arg::with_name("program")
             .required(true)
