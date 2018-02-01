@@ -10,7 +10,6 @@ readme = "README.md"
 [dependencies]
 clap = "2.29.2"
 error-chain = "0.11"
-falcon = { git = "https://github.com/falconre/falcon", branch = "0.2.4" }
 falcon_capstone = "0.2.1"
 goblin = "0.0.14"
 rayon = "0.9"

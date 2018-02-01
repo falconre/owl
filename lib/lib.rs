@@ -30,7 +30,7 @@ mod x86;
 
 pub use gadget::Gadget;
 pub use mips::{Mips, Mipsel};
-pub use x86::X86;
+pub use x86::{Amd64, X86};
 
 use std::collections::HashSet;
 

@@ -37,6 +37,39 @@ impl ::GadgetFinder for X86 {
 }
 
 
+/// A ROP-gadget finder for the amd64 (64-bit) architecture.
+#[derive(Clone, Debug)]
+pub struct Amd64 {}
+
+
+impl Amd64 {
+    /// Create a new amd64 ROP-Gadget finder.
+    pub fn new() -> Amd64 {
+        Amd64 {}
+    }
+
+    /// Find ROP-Gadgets in Amd64 code.
+    pub fn find(&self, address: u64, bytes: &[u8], depth: usize) -> Result<Vec<Gadget>> {
+        find(address,
+             bytes,
+             depth,
+             1,
+             capstone::cs_arch::CS_ARCH_X86,
+             capstone::CS_MODE_64,
+             RET_INSTRUCTIONS,
+             VALID_INSTRUCTIONS,
+             0)
+    }
+}
+
+
+impl ::GadgetFinder for Amd64 {
+    fn find(&self, address: u64, bytes: &[u8], depth: usize) -> Result<Vec<Gadget>> {
+        self.find(address, bytes, depth)
+    }
+}
+
+
 static VALID_INSTRUCTIONS: &[capstone::InstrIdArch] = &[
     capstone::InstrIdArch::X86(capstone::x86_insn::X86_INS_ADC),
     capstone::InstrIdArch::X86(capstone::x86_insn::X86_INS_ADD),
