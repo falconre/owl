@@ -1,6 +1,6 @@
 [package]
 name = "owl"
-version = "0.0.2"
+version = "0.0.3"
 authors = [ "Alex Eubanks <endeavor@rainbowsandpwnies.com>" ]
 repository = "https://github.com/falconre/owl"
 description = "ROP-gadget finder in Rust"
@@ -12,6 +12,7 @@ clap = "2.29.2"
 error-chain = "0.11"
 falcon_capstone = "0.2.1"
 goblin = "0.0.14"
+rayon = "0.9"
 
 [lib]
 name = "owl"

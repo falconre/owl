@@ -9,10 +9,11 @@ use std::io::Read;
 use std::path::Path;
 
 
-fn do_elf(file: &[u8], elf: &goblin::elf::Elf) {
+fn do_elf(file: &[u8], elf: &goblin::elf::Elf, filter: Option<&str>) {
     // Figure out which ROP-Gadget finder to use based on ELF header.
     let gadget_finder: Box<GadgetFinder> = match elf.header.e_machine {
         goblin::elf::header::EM_386 => Box::new(X86::new()),
+        goblin::elf::header::EM_X86_64 => Box::new(Amd64::new()),
         goblin::elf::header::EM_MIPS => match elf.header.endianness().unwrap() {
             goblin::container::Endian::Big => Box::new(Mips::new()),
             goblin::container::Endian::Little => Box::new(Mipsel::new())
@@ -62,6 +63,14 @@ fn do_elf(file: &[u8], elf: &goblin::elf::Elf) {
                   .map(|byte| format!("{:02x}", byte))
                   .collect::<Vec<String>>()
                   .join(" ");
+        if let Some(filter) = filter {
+            if !gadget.instructions()
+                      .iter()
+                      .fold(false, |matches, instruction| 
+                        matches | instruction.contains(filter)) {
+                continue;
+            }
+        }
         println!("{:0x}: {}", gadget.offset(), bytes);
         for instruction in gadget.instructions() {
             println!("  {}", instruction);
@@ -73,9 +82,12 @@ fn do_elf(file: &[u8], elf: &goblin::elf::Elf) {
 fn main () {
     // Use clap for command-line argument parsing.
     let matches = App::new("owl")
-        .version("0.0.1")
-        .author("Alex Eubanks <alex.eubanks@forallsecure.com")
+        .author("Alex Eubanks <endeavor@rainbowsandpwnies.com>")
         .about("ROP Gadget Finder")
+        .arg(Arg::with_name("filter")
+            .short("f")
+            .value_name("filter")
+            .help("Filter rop gadgets by substring"))
         .arg(Arg::with_name("program")
             .required(true)
             .index(1))
@@ -92,7 +104,7 @@ fn main () {
     // Parse the file with Elf.
     match goblin::Object::parse(&data).unwrap() {
         goblin::Object::Elf(elf) => {
-            do_elf(&data, &elf);
+            do_elf(&data, &elf, matches.value_of("filter"));
         },
         _ => println!("Unsupported file format")
     }

@@ -1,6 +1,7 @@
 use error::*;
 use falcon_capstone::capstone;
 use Gadget;
+use rayon::prelude::*;
 
 
 pub(crate) fn find(
@@ -11,53 +12,62 @@ pub(crate) fn find(
     arch: capstone::cs_arch,
     mode: capstone::cs_mode,
     ret_instructions: &[capstone::InstrIdArch],
-    valid_instructions: &[capstone::InstrIdArch]
+    valid_instructions: &[capstone::InstrIdArch],
+    delay_slot: usize
 ) -> Result<Vec<Gadget>> {
-    let mut gadgets = Vec::new();
 
-    let cs = capstone::Capstone::new(arch, mode)?;
+    let gadgets = (0..bytes.len() / minimum_instruction_width)
+        .into_par_iter()
+        .fold(|| Vec::new(), |mut gadgets, offset| {
 
-    let mut i = 0;
-    while i < bytes.len() {
-        'depth: for _ in 0..depth {
-            let top = if i + depth > bytes.len() {
-                bytes.len()
-            } else {
-                i + depth
-            };
-            let disassembly_range = i..top;
-            let disassembly_bytes = bytes.get(disassembly_range).unwrap();
-            let instructions = match cs.disasm(disassembly_bytes,
-                                               address + i as u64,
-                                               depth) {
-                Ok(instructions) => instructions,
-                Err(_) => continue
-            };
+            let offset = offset * minimum_instruction_width;
 
-            let mut instrs: Vec<String> = Vec::new();
+            let cs = capstone::Capstone::new(arch, mode)
+                .expect("Failed to instantiate capstone");
 
-            let mut length: usize = 0;
+            'depth: for _ in 0..depth {
+                let top = if offset + depth > bytes.len() {
+                    bytes.len()
+                } else {
+                    offset + depth
+                };
+                let disassembly_range = offset..top;
+                let disassembly_bytes = bytes.get(disassembly_range).unwrap();
+                let instructions = match cs.disasm(disassembly_bytes,
+                                                address + offset as u64,
+                                                depth) {
+                    Ok(instructions) => instructions,
+                    Err(_) => continue
+                };
 
-            for instruction in instructions.iter() {
-                length += instruction.size as usize;
-                instrs.push(format!("{} {}", instruction.mnemonic, instruction.op_str));
+                let mut instrs: Vec<String> = Vec::new();
 
-                if ret_instructions.contains(&instruction.id) {
-                    let offset = i as u64;
-                    let bytes =
-                        disassembly_bytes.get(0..length)
-                                         .ok_or("Failed to get bytes")?
-                                         .to_vec();
-                    gadgets.push(Gadget::new(offset, instrs, bytes));
-                    break 'depth;
-                }
-                else if !valid_instructions.contains(&instruction.id) {
-                    break;
+                let mut length: usize = 0;
+
+                for instruction in instructions.iter() {
+                    length += instruction.size as usize;
+                    instrs.push(format!("{} {}", instruction.mnemonic, instruction.op_str));
+
+                    if ret_instructions.contains(&instruction.id) {
+                        let bytes =
+                            match disassembly_bytes.get(0..(length + delay_slot)) {
+                                Some(bytes) => bytes,
+                                None => { continue; }
+                            };
+                        gadgets.push(Gadget::new(offset as u64, instrs, bytes.to_vec()));
+                        break 'depth;
+                    }
+                    else if !valid_instructions.contains(&instruction.id) {
+                        break;
+                    }
                 }
             }
-        }
-        i += minimum_instruction_width;
-    }
+            gadgets
+        })
+        .reduce(|| Vec::new(), |mut a, mut b| {
+            a.append(&mut b);
+            a
+        });
 
     Ok(gadgets)
 }
